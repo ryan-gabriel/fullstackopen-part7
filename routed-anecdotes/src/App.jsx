@@ -73,7 +73,7 @@ const CreateNew = (props) => {
   const content = useField("text");
   const author = useField("text");
   const info = useField("text");
- 
+
   const handleSubmit = (e) => {
     e.preventDefault();
     props.addNew({
@@ -84,13 +84,20 @@ const CreateNew = (props) => {
     });
   };
 
+  const handleReset = (event) => {
+    event.preventDefault();
+    content.onReset();
+    author.onReset();
+    info.onReset();
+  };
+
   return (
     <div>
       <h2>create a new anecdote</h2>
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input {...content}/>
+          <input {...content} />
         </div>
         <div>
           author
@@ -100,7 +107,8 @@ const CreateNew = (props) => {
           url for more info
           <input {...info} />
         </div>
-        <button>create</button>
+        <button type="submit">create</button>
+        <button onClick={handleReset}>reset</button>
       </form>
     </div>
   );
@@ -129,12 +137,12 @@ const Notification = ({ notification }) => {
     borderColor: "#ff1493",
     width: "fit-content",
   };
-  
+
   if (notification === "") {
     return null;
   }
   return <div style={style}>{notification}</div>;
-}
+};
 
 const App = () => {
   const [anecdotes, setAnecdotes] = useState([
@@ -164,8 +172,7 @@ const App = () => {
     setNotification(`a new anecdote ${anecdote.content} created!`);
     setTimeout(() => {
       setNotification("");
-    }
-    , 5000);
+    }, 5000);
     navigate("/");
   };
 
