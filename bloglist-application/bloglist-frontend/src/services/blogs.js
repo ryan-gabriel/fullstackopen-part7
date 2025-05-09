@@ -25,7 +25,7 @@ const create = async (blog) => {
   }
 };
 
-const updateLike = async (id, blog) => {
+const updateLike = async ({ id, blog }) => {
   try {
     const updatedBlog = await axios.put(`${baseUrl}/${id}`, blog);
     return updatedBlog.data;
@@ -42,6 +42,7 @@ const deleteBlog = async (id) => {
       headers: { Authorization: `Bearer ${user.token}` },
     };
     await axios.delete(`${baseUrl}/${id}`, config);
+    return id;
   } catch (error) {
     throw error;
   }
