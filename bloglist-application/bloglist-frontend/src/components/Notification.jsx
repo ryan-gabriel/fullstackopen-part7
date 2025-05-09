@@ -1,22 +1,22 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { useNotificationValue } from '../hook/notification';
 
-const Notification = ({ message, type }) => {
+const Notification = () => {
+  const notificationValue = useNotificationValue();
+
+  if (!notificationValue) return null;
+
   const messageStyle = {
-    color: type === 'error' ? 'red' : 'green',
+    color: notificationValue.type === 'error' ? 'red' : 'green',
     background: '#f0f0f0',
     fontSize: 20,
     borderStyle: 'solid',
-    borderRadius: 5,
+    borderRadius: 10,
     padding: 10,
     marginBottom: 10,
   };
-  return <div style={messageStyle}>{message}</div>;
-};
 
-Notification.propTypes = {
-  message: PropTypes.string.isRequired,
-  type: PropTypes.oneOf(['error', 'success']).isRequired,
+  return <div style={messageStyle}>{notificationValue.message}</div>;
 };
 
 export default Notification;

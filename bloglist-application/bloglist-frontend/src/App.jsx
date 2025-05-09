@@ -6,12 +6,13 @@ import LoginForm from './components/LoginForm';
 import logoutService from './services/auth/logout';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
+import { useNotificationDispatch } from './hook/notification';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [successCreateMessage, setSuccessCreateMessage] = useState(null);
+
+  const notificationDispatch = useNotificationDispatch();
 
   useEffect(() => {
     blogService
@@ -43,15 +44,27 @@ const App = () => {
       const createdBlog = await blogService.create(blogObject);
       console.log(createdBlog);
       setBlogs(blogs.concat(createdBlog));
-      setSuccessCreateMessage(
-        `A new blog "${blogObject.title}" by ${blogObject.author} added`
-      );
-
+      notificationDispatch({
+        type: 'SET',
+        payload: {
+          type: 'success',
+          message: `A new blog "${blogObject.title}" by ${blogObject.author} added`,
+        },
+      });
       setTimeout(() => {
-        setSuccessCreateMessage(null);
+        notificationDispatch({ type: 'CLEAR' });
       }, 3000);
     } catch (error) {
-      setErrorMessage(error.response.data.error);
+      notificationDispatch({
+        type: 'SET',
+        payload: {
+          type: 'error',
+          message: error.response.data.error,
+        },
+      });
+      setTimeout(() => {
+        notificationDispatch({ type: 'CLEAR' });
+      }, 3000);
       throw error;
     }
   };
@@ -84,9 +97,15 @@ const App = () => {
         setBlogs(blogs.filter((blog) => blog.id !== id));
       }
     } catch (e) {
-      setErrorMessage('Failed to delete blog');
+      notificationDispatch({
+        type: 'SET',
+        payload:{
+          type: 'error',
+          message: 'Failed to delete blog',
+        }
+      });
       setTimeout(() => {
-        setErrorMessage(null);
+        notificationDispatch({ type: 'CLEAR' });
       }, 3000);
     }
   };
@@ -94,17 +113,15 @@ const App = () => {
   if (user === null) {
     return (
       <div>
-        {errorMessage && <Notification message={errorMessage} type="error" />}
-        <LoginForm setErrorMessage={setErrorMessage} setUser={setUser} />
+        <Notification />
+        <LoginForm setUser={setUser} />
       </div>
     );
   }
 
   return (
     <div>
-      {successCreateMessage && (
-        <Notification message={successCreateMessage} type="success" />
-      )}
+      <Notification />
       <h2>blogs</h2>
       <p>
         {user.name} logged in <button onClick={handleLogout}>Log Out</button>

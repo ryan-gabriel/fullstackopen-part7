@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import loginService from '../services/auth/login';
 import PropTypes from 'prop-types';
+import { useNotificationDispatch, useNotificationValue } from '../hook/notification';
 
-const LoginForm = ({ setErrorMessage, setUser }) => {
+const LoginForm = ({ setUser }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+  const notificationDispatch = useNotificationDispatch();
+  const notificationValue  = useNotificationValue();
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -20,9 +23,15 @@ const LoginForm = ({ setErrorMessage, setUser }) => {
       setUsername('');
       setPassword('');
     } catch (error) {
-      setErrorMessage('Wrong username or password');
+      notificationDispatch({
+        type: 'SET',
+        payload: {
+          type: 'error',
+          message: 'Wrong username or password',
+        }
+      });
       setTimeout(() => {
-        setErrorMessage(null);
+        notificationDispatch({ type: 'CLEAR' });
       }, 3000);
     }
   };
@@ -59,7 +68,6 @@ const LoginForm = ({ setErrorMessage, setUser }) => {
 };
 
 LoginForm.propTypes = {
-  setErrorMessage: PropTypes.func.isRequired,
   setUser: PropTypes.func.isRequired,
 };
 
