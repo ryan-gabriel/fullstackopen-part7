@@ -9,18 +9,23 @@ import Togglable from './components/Togglable';
 import { useNotificationDispatch } from './hook/notification';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { showNotification } from './utils/notify';
+import { useLoggedUserDispatch, useLoggedUserValue } from './hook/loggedUser';
 
 const App = () => {
   const queryClient = useQueryClient();
   const notificationDispatch = useNotificationDispatch();
-  const [user, setUser] = useState(null);
+  const user = useLoggedUserValue();
+  const loggedUserDispatch = useLoggedUserDispatch();
   const blogFormRef = useRef();
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser');
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      setUser(user);
+      loggedUserDispatch({
+        type: 'SET_USER',
+        payload: user,
+      });
     }
   }, []);
 
@@ -69,13 +74,15 @@ const App = () => {
     },
     refetchOnWindowFocus: false,
     retry: 1,
-    enabled: !!user
+    enabled: !!user,
   });
 
   const handleLogout = async (event) => {
     event.preventDefault();
     logoutService.logout();
-    setUser(null);
+    loggedUserDispatch({
+      type: 'CLEAR_USER',
+    });
   };
 
   const addBlog = async (blogObject) => {
@@ -121,7 +128,7 @@ const App = () => {
     return (
       <div>
         <Notification />
-        <LoginForm setUser={setUser} />
+        <LoginForm />
       </div>
     );
   }

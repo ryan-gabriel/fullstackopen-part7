@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import loginService from '../services/auth/login';
 import PropTypes from 'prop-types';
 import { useNotificationDispatch } from '../hook/notification';
 import { showNotification } from '../utils/notify';
+import { useLoggedUserDispatch } from '../hook/loggedUser';
 
-const LoginForm = ({ setUser }) => {
+const LoginForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const notificationDispatch = useNotificationDispatch();
+  const loggedUserDispatch = useLoggedUserDispatch();
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -19,7 +21,10 @@ const LoginForm = ({ setUser }) => {
       });
 
       window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user));
-      setUser(user);
+      loggedUserDispatch({
+        type: 'SET_USER',
+        payload: user,
+      });
       setUsername('');
       setPassword('');
     } catch (error) {
@@ -59,10 +64,6 @@ const LoginForm = ({ setUser }) => {
       </form>
     </div>
   );
-};
-
-LoginForm.propTypes = {
-  setUser: PropTypes.func.isRequired,
 };
 
 export default LoginForm;
