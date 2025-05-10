@@ -2,9 +2,9 @@ import { useRef } from 'react';
 import Blog from './Blog';
 import CreateBlogForm from './CreateBlogForm';
 import Togglable from './Togglable';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { showNotification } from '../utils/notify';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import blogService from '../services/blogs';
+import { showNotification } from '../utils/notify';
 import { useLoggedUserValue } from '../hook/loggedUser';
 import { useNotificationDispatch } from '../hook/notification';
 
@@ -12,7 +12,6 @@ const Blogs = () => {
   const blogFormRef = useRef();
   const notificationDispatch = useNotificationDispatch();
   const queryClient = useQueryClient();
-
   const user = useLoggedUserValue();
 
   const result = useQuery({
@@ -39,30 +38,6 @@ const Blogs = () => {
     },
   });
 
-  const updateBlogMutation = useMutation({
-    mutationFn: blogService.updateLike,
-    onSuccess: (updatedBlog) => {
-      const blogs = queryClient.getQueryData(['blogs']) || [];
-      queryClient.setQueryData(
-        ['blogs'],
-        blogs
-          .map((b) => (b.id === updatedBlog.id ? updatedBlog : b))
-          .sort((a, b) => b.likes - a.likes)
-      );
-    },
-  });
-
-  const deleteBlogMutation = useMutation({
-    mutationFn: blogService.deleteBlog,
-    onSuccess: (deletedBlogId) => {
-      const blogs = queryClient.getQueryData(['blogs']) || [];
-      queryClient.setQueryData(
-        ['blogs'],
-        blogs.filter((b) => b.id !== deletedBlogId)
-      );
-    },
-  });
-
   if (result.isLoading) {
     return <div>loading blogs...</div>;
   }
@@ -77,36 +52,9 @@ const Blogs = () => {
     } catch (error) {
       showNotification(notificationDispatch, {
         type: 'error',
-        message: error.response.data.error,
+        message: error.response?.data?.error || 'Failed to create blog',
       });
       throw error;
-    }
-  };
-
-  const updateLike = async (id) => {
-    try {
-      const blogToUpdate = await blogService.getBlog(id);
-      const updatedBlog = {
-        ...blogToUpdate,
-        likes: blogToUpdate.likes + 1,
-      };
-
-      updateBlogMutation.mutate({ id, blog: updatedBlog });
-    } catch (error) {
-      console.error('Failed to update likes', error);
-    }
-  };
-
-  const deleteBlog = async (id, title, author) => {
-    try {
-      if (window.confirm(`Remove blog ${title} by ${author}`)) {
-        deleteBlogMutation.mutate(id);
-      }
-    } catch (e) {
-      showNotification(notificationDispatch, {
-        type: 'error',
-        message: `Failed to delete blog`,
-      });
     }
   };
 
@@ -119,13 +67,7 @@ const Blogs = () => {
       </Togglable>
 
       {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          loggedUser={user}
-          blog={blog}
-          updateLike={updateLike}
-          deleteBlog={deleteBlog}
-        />
+        <Blog key={blog.id} blog={blog} />
       ))}
     </>
   );
