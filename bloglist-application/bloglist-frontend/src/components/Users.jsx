@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import Table from 'react-bootstrap/Table';
-import userService from '../services/users'
+import userService from '../services/users';
+import { Link } from 'react-router-dom';
 
 const Users = () => {
-  const users  = useQuery({
+  const users = useQuery({
     queryKey: ['users'],
     queryFn: userService.getAll,
     refetchOnWindowFocus: false,
@@ -30,7 +31,8 @@ const Users = () => {
         <tbody>
           {users.data.map((user) => (
             <tr key={user.id}>
-              <td>{user.name}</td>
+              <td>
+                <Link to={`/users/${user.id}`} >{user.name}</Link></td>
               <td>{user.blogs.length}</td>
             </tr>
           ))}
@@ -40,4 +42,4 @@ const Users = () => {
   );
 };
 
-export default Users
+export default Users;
