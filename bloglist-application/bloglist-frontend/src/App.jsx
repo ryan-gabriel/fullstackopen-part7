@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import LoginForm from './components/LoginForm';
-import logoutService from './services/auth/logout';
 import Notification from './components/Notification';
 import { useLoggedUserDispatch, useLoggedUserValue } from './hook/loggedUser';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Blogs from './components/Blogs';
 import Users from './components/Users';
 import UserDetail from './components/UserDetail';
 import BlogDetail from './components/BlogDetail';
+import Navigation from './components/Navigation';
 
 const App = () => {
   const user = useLoggedUserValue();
@@ -24,14 +24,6 @@ const App = () => {
     }
   }, []);
 
-  const handleLogout = async (event) => {
-    event.preventDefault();
-    logoutService.logout();
-    loggedUserDispatch({
-      type: 'CLEAR_USER',
-    });
-  };
-
   if (user === null) {
     return (
       <div>
@@ -43,10 +35,9 @@ const App = () => {
 
   return (
     <div>
+      <Navigation user={user}/>
       <Notification />
-      <h2>blogs</h2>
-      <p>{user.name} logged in</p>
-      <button onClick={handleLogout}>Log Out</button>
+      <h2>blog app</h2>
       <Routes>
         <Route path="/" element={<Blogs />} />
         <Route path="/users" element={<Users />} />
