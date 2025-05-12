@@ -4,6 +4,17 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLoggedUserValue } from '../hook/loggedUser';
 import { showNotification } from '../utils/notify';
 import { useEffect, useState } from 'react';
+import {
+  Card,
+  Button,
+  Form,
+  ListGroup,
+  Container,
+  Row,
+  Col,
+} from 'react-bootstrap';
+import Loading from './Loading';
+import FailedMessage from './FailedMessage';
 
 const BlogDetail = () => {
   const blogId = useParams().id;
@@ -64,8 +75,9 @@ const BlogDetail = () => {
     }
   };
 
-  if (blogResponse.isLoading) return <div>Loading blog...</div>;
-  if (blogResponse.isError) return <div>Failed to fetch blog</div>;
+  if (blogResponse.isLoading) return <Loading />;
+  if (blogResponse.isError)
+    return <FailedMessage message={'Failed to fetch blog'} />;
 
   const blog = blogResponse.data;
 
@@ -78,39 +90,78 @@ const BlogDetail = () => {
   };
 
   return (
-    <>
-      <h1>
-        {blog.title} {blog.author}
-      </h1>
-      <a href={blog.url} target="_blank">
-        {blog.url}
-      </a>
-      <p>
-        {blog.likes} likes
-        <button
-          onClick={() => likeMutation.mutate()}
-          disabled={likeMutation.isPending}
-        >
-          like
-        </button>
-      </p>
-      <p>added by {blog.user.name}</p>
-      {blog.user.name == loggedUser.name && (
-        <button onClick={() => deleteBlog(blog.id, blog.title, blog.author)}>
-          remove
-        </button>
-      )}
-      <h3>comments</h3>
-      <form onSubmit={handleComment}>
-        <input type="text" id="comment" />
-        <button type="submit">add comment</button>
-      </form>
-      <ul>
-        {comments.map((comment) => (
-          <li>{comment}</li>
+    <Container className="mt-5">
+      <Card className="mb-4 bg-dark text-light">
+        <Row className="justify-content-center mb-4">
+          <Col xs="auto">
+            <h1 className="text-light text-center">
+              {blog.title} by {blog.author}
+            </h1>
+          </Col>
+        </Row>
+        <Card.Body>
+          <Card.Text className="mb-3">
+            URL:{' '}
+            <a
+              href={blog.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-light"
+            >
+              {blog.url}
+            </a>
+          </Card.Text>
+          <Card.Text>
+            {blog.likes} likes
+            <Button
+              variant="outline-light"
+              size="sm"
+              onClick={() => likeMutation.mutate()}
+              disabled={likeMutation.isPending}
+              className="ms-2"
+            >
+              Like
+            </Button>
+          </Card.Text>
+          <Card.Text>Added by {blog.user.name}</Card.Text>
+          {blog.user.name === loggedUser.name && (
+            <Button
+              variant="outline-danger"
+              size="sm"
+              onClick={() => deleteBlog(blog.id, blog.title, blog.author)}
+            >
+              Remove
+            </Button>
+          )}
+        </Card.Body>
+      </Card>
+
+      <Row className="mb-4">
+        <Col>
+          <h3 className="text-light">Comments</h3>
+          <Form onSubmit={handleComment}>
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="text"
+                id="comment"
+                placeholder="Add a comment"
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit">
+              Add Comment
+            </Button>
+          </Form>
+        </Col>
+      </Row>
+
+      <ListGroup className="bg-dark text-light">
+        {comments.map((comment, index) => (
+          <ListGroup.Item key={index} className="bg-dark text-light">
+            {comment}
+          </ListGroup.Item>
         ))}
-      </ul>
-    </>
+      </ListGroup>
+    </Container>
   );
 };
 

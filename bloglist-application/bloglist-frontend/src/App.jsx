@@ -37,7 +37,7 @@ const App = () => {
     <div>
       <Navigation user={user}/>
       <Notification />
-      <h2>blog app</h2>
+      <h2 className='text-center'>Blog Application</h2>
       <Routes>
         <Route path="/" element={<Blogs />} />
         <Route path="/users" element={<Users />} />

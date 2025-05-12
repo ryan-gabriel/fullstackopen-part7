@@ -1,21 +1,40 @@
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
 const Blog = ({ blog }) => {
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
+  const [isHovered, setIsHovered] = useState(false);
+
+  const linkStyle = {
+    color: 'white',
+    textDecoration: 'none',
+    padding: '15px',
+    border: '1px solid #14FFEC',
+    marginBottom: 10  ,
+    textAlign: 'center',
+    position: 'relative',
+    borderRadius: '8px',
+    backgroundColor: 'transparent',
+    transition: 'all 0.3s ease',
+    display: 'inline-block',
+    width: '95%',
+  };
+
+  const hoveredLinkStyle = {
+    ...linkStyle,
+    backgroundColor: '#14FFEC',
+    color: 'black',
   };
 
   return (
-    <div style={blogStyle}>
-      <Link to={`/blogs/${blog.id}`}>
-        {blog.title} {blog.author}
-      </Link>
-    </div>
+    <Link
+      to={`/blogs/${blog.id}`}
+      style={isHovered ? hoveredLinkStyle : linkStyle}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {blog.title} {blog.author}
+    </Link>
   );
 };
 

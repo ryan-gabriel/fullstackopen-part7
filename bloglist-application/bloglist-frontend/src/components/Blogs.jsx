@@ -7,6 +7,8 @@ import blogService from '../services/blogs';
 import { showNotification } from '../utils/notify';
 import { useLoggedUserValue } from '../hook/loggedUser';
 import { useNotificationDispatch } from '../hook/notification';
+import Loading from './Loading';
+import FailedMessage from './FailedMessage';
 
 const Blogs = () => {
   const blogFormRef = useRef();
@@ -39,11 +41,15 @@ const Blogs = () => {
   });
 
   if (result.isLoading) {
-    return <div>loading blogs...</div>;
+    return <Loading />;
   }
 
   if (result.isError) {
-    return <div>blogs service not available due to problems in server</div>;
+    return (
+      <FailedMessage
+        message={`blogs service not available due to problems in server`}
+      />
+    );
   }
 
   const addBlog = async (blogObject) => {
@@ -62,13 +68,22 @@ const Blogs = () => {
 
   return (
     <>
-      <Togglable buttonLabel="new blog" ref={blogFormRef}>
+      <Togglable buttonLabel="New Blog" ref={blogFormRef}>
         <CreateBlogForm createBlog={addBlog} />
       </Togglable>
 
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
+      <div className="w-100 d-flex flex-column align-items-center">
+        {blogs.length === 0 ? (
+          <p
+            className="text-center bg-dark p-3 rounded"
+            style={{ color: '#A9A9A9' }}
+          >
+            Added Blog
+          </p>
+        ) : (
+          blogs.map((blog) => <Blog key={blog.id} blog={blog} />)
+        )}
+      </div>
     </>
   );
 };

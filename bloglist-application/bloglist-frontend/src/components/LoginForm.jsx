@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import loginService from '../services/auth/login';
-import PropTypes from 'prop-types';
 import { useNotificationDispatch } from '../hook/notification';
 import { showNotification } from '../utils/notify';
 import { useLoggedUserDispatch } from '../hook/loggedUser';
+import { Form, Button, Container, Card } from 'react-bootstrap';
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');
@@ -35,34 +35,45 @@ const LoginForm = () => {
     }
   };
   return (
-    <div>
-      <h2>Log in to application</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          <label htmlFor="username">Username</label>
-          <input
-            data-testid="username"
-            id="username"
-            type="text"
-            value={username}
-            name="username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
-            data-testid="password"
-            id="password"
-            type="password"
-            value={password}
-            name="password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type="submit">login</button>
-      </form>
-    </div>
+    <Container
+      className="d-flex justify-content-center align-items-center"
+      style={{ height: '100vh' }}
+    >
+      <Card className="p-4" style={{ width: '400px' }}>
+        <Card.Body>
+          <h2 className="text-center mb-4">Log in to application</h2>
+          <Form onSubmit={handleLogin}>
+            <Form.Group controlId="username" className="mb-3">
+              <Form.Label>Username</Form.Label>
+              <Form.Control
+                data-testid="username"
+                type="text"
+                value={username}
+                name="username"
+                onChange={({ target }) => setUsername(target.value)}
+                placeholder="Enter your username"
+              />
+            </Form.Group>
+
+            <Form.Group controlId="password" className="mb-3">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                data-testid="password"
+                type="password"
+                value={password}
+                name="password"
+                onChange={({ target }) => setPassword(target.value)}
+                placeholder="Enter your password"
+              />
+            </Form.Group>
+
+            <Button variant="primary" type="submit" className="w-100">
+              Login
+            </Button>
+          </Form>
+        </Card.Body>
+      </Card>
+    </Container>
   );
 };
 
